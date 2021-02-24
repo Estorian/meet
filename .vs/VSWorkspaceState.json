@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\auth-server"
+    "\\src",
+    "\\src\\__tests__"
   ],
-  "SelectedNode": "\\auth-server\\handler.js",
+  "SelectedNode": "\\src\\CitySearch.js",
   "PreviewInSolutionExplorer": false
 }
