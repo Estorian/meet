@@ -3,7 +3,7 @@ import './App.css';
 import EventList from './EventList';
 import CitySearch from './CitySearch';
 import NumberOfEvents from './NumberOfEvents';
-import { extractLocations, getEvents } from './api';
+import { extractLocations, getEvents, limitEvents } from './api';
 import './nprogress.css';
 
 
@@ -12,7 +12,9 @@ class App extends Component {
         super();
         this.state = {
             events: [],
-            locations: []
+            locations: [],
+            eventListSize: 10,
+            limitedList: []
         }
     }
 
@@ -20,10 +22,16 @@ class App extends Component {
         this.mounted = true;
         getEvents().then((events) => {
             if (this.mounted) {
-                this.setState({ events, locations: extractLocations(events) });
+                this.setState({
+                    events,
+                    locations: extractLocations(events),
+                    limitedList: limitEvents(this.state.events, this.state.eventListSize),
+                });
             }
         });
     }
+
+
 
     componentWillUnmount() {
         this.mounted = false;
@@ -34,19 +42,30 @@ class App extends Component {
             const locationEvents = (location === 'all') ?
                 events :
                 events.filter((event) => event.location === location);
+            let limitedList = limitEvents(locationEvents, this.state.eventListSize);
             this.setState({
-                events: locationEvents
+                events: locationEvents,
+                limitedList: limitedList
             });
         });
     }
 
+    updateListSize = (number) => {
+        let limitedList = limitEvents(this.state.events, number);
+        this.setState({
+            eventListSize: number,
+            limitedList: limitedList
+        });
+    }
+
     render() {
+        let { limitedList } = this.state;
 
         return (
             <div className="App">
                 <CitySearch locations={this.state.locations} updateEvents={this.updateEvents} />
-                <NumberOfEvents />
-                <EventList events={this.state.events} />
+                <NumberOfEvents number={this.state.eventListSize} updateListSize={this.updateListSize} />
+                <EventList events={limitedList} eventListSize={this.state.eventListSize} />
             </div>
         );
     }

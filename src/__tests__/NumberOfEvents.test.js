@@ -7,19 +7,19 @@ import { mockEvent } from '../mock-data';
 describe('<NumberOfEvents />', () => {
     let NumberOfEventsWrapper;
     beforeEach(() => {
-        NumberOfEventsWrapper = shallow(<NumberOfEvents />);
+        NumberOfEventsWrapper = shallow(<NumberOfEvents updateListSize={() => { } }/>);
     })
 
     test('render text input', () => {
         expect(NumberOfEventsWrapper.find('.number')).toHaveLength(1);
     });
-
+    /*
     test('default number of events is 32', () => {
-        expect(NumberOfEventsWrapper.state('eventsPerPage')).toBe(32);
-    });
+        expect(NumberOfEventsWrapper.state('eventListSize')).toBe(32);
+    });*/
 
     test('renders text input correctly', () => {
-        const eventsPerPage = NumberOfEventsWrapper.state('eventsPerPage');
+        const eventsPerPage = NumberOfEventsWrapper.state('eventListSize');
         expect(NumberOfEventsWrapper.find('.number').prop('value')).toBe(eventsPerPage);
     });
 
@@ -29,6 +29,6 @@ describe('<NumberOfEvents />', () => {
         });
         const eventObject = { target: { value: 45 } };
         NumberOfEventsWrapper.find('.number').simulate('change', eventObject);
-        expect(NumberOfEventsWrapper.state('eventsPerPage')).toBe(45);
+        expect(NumberOfEventsWrapper.state('eventListSize')).toBe(45);
     })
 })

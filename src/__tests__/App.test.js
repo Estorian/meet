@@ -7,7 +7,7 @@ import EventList from '../EventList';
 import CitySearch from '../CitySearch';
 import NumberOfEvents from '../NumberOfEvents';
 import { mockData } from '../mock-data';
-import { extractLocations, getEvents } from '../api';
+import { extractLocations, getEvents, limitEvents } from '../api';
 
 describe('<App /> component', () => {
     let AppWrapper;
@@ -69,4 +69,48 @@ describe('<App /> integration', () => {
         expect(AppWrapper.state('events')).toEqual(allEvents);
         AppWrapper.unmount();
     });
+
+    test('App passes "eventListSize" state as a prop to NumberOfEvents', () => {
+        const AppWrapper = mount(<App />);
+        const AppNumberState = AppWrapper.state('eventListSize');
+        expect(AppNumberState).not.toEqual(undefined);
+        expect(AppWrapper.find(NumberOfEvents).props().number).toEqual(AppNumberState);
+        AppWrapper.unmount();
+    });
+
+    test('Changing the number in NumberOfEvents changes eventListSize', () => {
+        const AppWrapper = mount(<App />);
+        const NumberOfEventsWrapper = AppWrapper.find(NumberOfEvents);
+        const newNumber = { target: { value: 3 } };
+        NumberOfEventsWrapper.find('.number').simulate('change', newNumber);
+        expect(AppWrapper.state('eventListSize')).toBe(3);
+        AppWrapper.unmount();
+    });
+
+    test('eventListSize matches number of events in eventList', () => {
+        const AppWrapper = mount(<App />);
+        AppWrapper.setState({
+            events: mockData,
+            limitedList: limitEvents(mockData, AppWrapper.state('eventListSize'))
+        })
+        const EventListWrapper = AppWrapper.find(EventList);
+        const eventListSize = AppWrapper.state('eventListSize');
+        expect(EventListWrapper.find('.list li')).toHaveLength(eventListSize);
+        AppWrapper.unmount();
+    })
+
+    test('Changing the number of events in NumberOfEvents will change the number of events displayed in EventList', () => {
+        const AppWrapper = mount(<App />);
+        AppWrapper.setState({
+            events: mockData,
+            limitedList: limitEvents(mockData, AppWrapper.state('eventListSize'))
+        });
+        const NumberOfEventsWrapper = AppWrapper.find(NumberOfEvents);
+        NumberOfEventsWrapper.find('.number').simulate('change', { target: { value: 5 } });
+        const EventListWrapper = AppWrapper.find(EventList);
+        expect(AppWrapper.state('eventListSize')).toBe(5);
+        expect(EventListWrapper.find('.list li')).toHaveLength(5);
+        AppWrapper.unmount();
+    });
+
 });
