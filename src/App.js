@@ -22,10 +22,11 @@ class App extends Component {
         this.mounted = true;
         getEvents().then((events) => {
             if (this.mounted) {
+                let limitedList = limitEvents(events, this.state.eventListSize)
                 this.setState({
                     events,
                     locations: extractLocations(events),
-                    limitedList: limitEvents(this.state.events, this.state.eventListSize),
+                    limitedList: limitedList,
                 });
             }
         });
@@ -39,7 +40,7 @@ class App extends Component {
 
     updateEvents = (location) => {
         getEvents().then((events) => {
-            const locationEvents = (location === 'all') ?
+            const locationEvents = (location === 'all' || location === '') ?
                 events :
                 events.filter((event) => event.location === location);
             let limitedList = limitEvents(locationEvents, this.state.eventListSize);

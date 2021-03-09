@@ -6,9 +6,10 @@ import Event from './Event';
 class EventList extends Component {
 
     render() {
-        if (!this.props.events) return <div className="event-list"></div>
+        if (!this.props.events) {
+            return (<div className="event-list"></div>)
+        };
         const events = this.props.events;
-        console.log('EventList: ', events.length);
 
         return (
             <div className="event-list">

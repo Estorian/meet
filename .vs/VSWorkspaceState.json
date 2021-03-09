@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\src",
+    "\\src\\features",
     "\\src\\__tests__"
   ],
-  "SelectedNode": "\\src\\__tests__\\App.test.js",
+  "SelectedNode": "\\src\\features\\filterEventsByCity.test.js",
   "PreviewInSolutionExplorer": false
 }
