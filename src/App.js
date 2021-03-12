@@ -4,10 +4,10 @@ import EventList from './EventList';
 import CitySearch from './CitySearch';
 import NumberOfEvents from './NumberOfEvents';
 import { extractLocations, getEvents, limitEvents } from './api';
-import { InfoAlert, WarningAlert } from './alert';
+import { InfoAlert } from './alert';
 import './nprogress.css';
 import {
-    ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+    ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Pie, PieChart
 } from 'recharts';
 
 
@@ -74,6 +74,15 @@ class App extends Component {
         return data;
     }
 
+    getGenreData = () => {
+        const genres = ['React', 'JavaScript', 'Node', 'jQuery', 'AngularJS'];
+        const data = genres.map((genre) => {
+            const value = this.state.events.filter((event) => event.summary.split(' ').includes(genre)).length
+            return { name: genre, value }
+        });
+        return data;
+    }
+
     render() {
         let { limitedList } = this.state;
         let offlineAlertText = '';
@@ -84,26 +93,42 @@ class App extends Component {
 
         return (
             <div className="App">
-                <WarningAlert text={offlineAlertText} />
+                <InfoAlert text={offlineAlertText} />
                 <CitySearch locations={this.state.locations} updateEvents={this.updateEvents} />
                 <NumberOfEvents number={this.state.eventListSize} updateListSize={this.updateListSize} />
-                
-                <ResponsiveContainer height={400} >
-                    <ScatterChart
-                        margin={{
-                            top: 20,
-                            right: 20,
-                            bottom: 20,
-                            left: 20,
-                        }}
-                        >
-                        <CartesianGrid />
-                        <XAxis type="category" dataKey="city" name="Place" />
-                        <YAxis type="number" dataKey="number" name="Number of Events" allowDecimals={false} />
-                        <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                        <Scatter data={this.getData()} fill="#8884d8" />
-                    </ScatterChart>
-                </ResponsiveContainer>
+                <div className="data-vis-wrapper">
+                    <ResponsiveContainer height={400} >
+                        <PieChart width={400} height={400}>
+                            <Pie
+                                data={this.getGenreData()}
+                                cx={200}
+                                cy={200}
+                                labelLine={false}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="value"
+                                label={({ name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                />
+                        </PieChart>
+                    </ResponsiveContainer>
+                    
+                    <ResponsiveContainer height={400} >
+                        <ScatterChart
+                            margin={{
+                                top: 20,
+                                right: 20,
+                                bottom: 20,
+                                left: 20,
+                            }}
+                            >
+                            <CartesianGrid />
+                            <XAxis type="category" dataKey="city" name="Place" />
+                            <YAxis type="number" dataKey="number" name="Number of Events" allowDecimals={false} />
+                            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                            <Scatter data={this.getData()} fill="#8884d8" />
+                        </ScatterChart>
+                    </ResponsiveContainer>
+                </div>
 
                 <EventList events={limitedList} eventListSize={this.state.eventListSize} />
             </div>
