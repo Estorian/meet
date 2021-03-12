@@ -6,6 +6,9 @@ import NumberOfEvents from './NumberOfEvents';
 import { extractLocations, getEvents, limitEvents } from './api';
 import { InfoAlert, WarningAlert } from './alert';
 import './nprogress.css';
+import {
+    ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts';
 
 
 class App extends Component {
@@ -60,6 +63,17 @@ class App extends Component {
         });
     }
 
+    getData = () => {
+        const { locations, events } = this.state;
+        const data = locations.map((location) => {
+            const number = events.filter((event) => event.location === location).length
+            const city = location.split(' ').shift();
+            return {city, number};
+        });
+        console.log(data);
+        return data;
+    }
+
     render() {
         let { limitedList } = this.state;
         let offlineAlertText = '';
@@ -70,9 +84,27 @@ class App extends Component {
 
         return (
             <div className="App">
-                <InfoAlert text={offlineAlertText} />
+                <WarningAlert text={offlineAlertText} />
                 <CitySearch locations={this.state.locations} updateEvents={this.updateEvents} />
                 <NumberOfEvents number={this.state.eventListSize} updateListSize={this.updateListSize} />
+                
+                <ResponsiveContainer height={400} >
+                    <ScatterChart
+                        margin={{
+                            top: 20,
+                            right: 20,
+                            bottom: 20,
+                            left: 20,
+                        }}
+                        >
+                        <CartesianGrid />
+                        <XAxis type="category" dataKey="city" name="Place" />
+                        <YAxis type="number" dataKey="number" name="Number of Events" allowDecimals={false} />
+                        <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                        <Scatter data={this.getData()} fill="#8884d8" />
+                    </ScatterChart>
+                </ResponsiveContainer>
+
                 <EventList events={limitedList} eventListSize={this.state.eventListSize} />
             </div>
         );
