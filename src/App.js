@@ -67,10 +67,9 @@ class App extends Component {
         const { locations, events } = this.state;
         const data = locations.map((location) => {
             const number = events.filter((event) => event.location === location).length
-            const city = location.split(' ').shift();
+            const city = location.split(',').shift();
             return {city, number};
         });
-        console.log(data);
         return data;
     }
 
@@ -93,12 +92,15 @@ class App extends Component {
 
         return (
             <div className="App">
+                <h1 className="header">MEET</h1>
                 <InfoAlert text={offlineAlertText} />
+                <h3 className="header">Type a city name to see events in that city</h3>
                 <CitySearch locations={this.state.locations} updateEvents={this.updateEvents} />
                 <NumberOfEvents number={this.state.eventListSize} updateListSize={this.updateListSize} />
+                <div className="container">
                 <div className="data-vis-wrapper">
-                    <ResponsiveContainer height={400} >
-                        <PieChart width={400} height={400}>
+                    <ResponsiveContainer className="recharts-responsive-container" height={400} >
+                        <PieChart width={300} height={400}>
                             <Pie
                                 data={this.getGenreData()}
                                 cx={200}
@@ -111,8 +113,8 @@ class App extends Component {
                                 />
                         </PieChart>
                     </ResponsiveContainer>
-                    
-                    <ResponsiveContainer height={400} >
+
+                    <ResponsiveContainer className="recharts-responsive-container" height={400} >
                         <ScatterChart
                             margin={{
                                 top: 20,
@@ -124,13 +126,14 @@ class App extends Component {
                             <CartesianGrid />
                             <XAxis type="category" dataKey="city" name="Place" />
                             <YAxis type="number" dataKey="number" name="Number of Events" allowDecimals={false} />
-                            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                            <Tooltip />
                             <Scatter data={this.getData()} fill="#8884d8" />
                         </ScatterChart>
                     </ResponsiveContainer>
                 </div>
 
                 <EventList events={limitedList} eventListSize={this.state.eventListSize} />
+                </div>
             </div>
         );
     }

@@ -17,15 +17,23 @@ class Event extends Component {
     }
 
     render() {
-        const { summary, location, description, link } = this.props.event;
-        const date = this.props.event.start.dateTime;
+        const { summary, location, description, htmlLink } = this.props.event;
+        const date = new Date(this.props.event.start.dateTime).toString();
 
         let details;
         if (this.state.showDetails) {
             details = <div className='expanded'>
-                <h2>About event</h2>
+                <h3>About event</h3>
                 <p className='description'>{description}</p>
-                <a className='link' href={link}>See details on Google Calendar</a>
+                <a 
+                    className='link' 
+                    href={htmlLink} 
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    >
+                    See details on Google Calendar
+                </a>
+                <br></br>
                 <button className='detailsButton' onClick={() => this.handleShowDetails(false)}>Hide details</button>
             </div>
         } else {
@@ -33,9 +41,17 @@ class Event extends Component {
         }
 
         return <div className='event'>
-            <h1 className='summary' >{summary}</h1>
+            <h2 className='summary' >{summary}</h2>
             <p className='date'>{date}</p>
-            <p className='location'>{location}</p>
+            <div className='place'>
+                <img 
+                    src="map-pin.svg" 
+                    alt=''
+                    height="5px"
+                    width="5px"
+                />
+                <p className='location'>{location}</p>
+            </div>
             {details}
         </div>
     };
